@@ -2,7 +2,7 @@ library(rgl)
 library(pracma)
 library(gplots)
 
-setwd("E:/stozki/artykuł_zb/mysz_kwiatek") #trzeba zmieni? na wlasna sciezke, folder ze zbiorami
+setwd("E:/stozki/artykuł_zb/mysz_kwiatek") #set own patch to dataSet
 
 pliki <- list.files()
 czas<-array(0,dim=c(250,3))
