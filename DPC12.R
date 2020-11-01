@@ -2,7 +2,9 @@ library(rgl)
 library(pracma)
 library(gplots)
 
-setwd("E:/stozki/artykuł_zb/mysz_kwiatek") #set own patch to dataSet
+setwd("") #set own patch to dataSet
+
+results = "" #set own patch for results
 
 pliki <- list.files()
 czas<-array(0,dim=c(250,3))
@@ -16,7 +18,7 @@ for (iter in 1:1){
   wyniki <- array(0, dim=c(2000 ,length(pliki)))
   gif_1=0
   
-  #parametry
+  #parameters
   dyst=c(0,0,0)
   
   a <- 1
@@ -34,21 +36,21 @@ for (iter in 1:1){
     zbior <- read.csv(i,header=TRUE, sep = ";", dec=",")
     dl_zb <- length(zbior[,1])
     lb_gr <- length(unique(zbior[,4]))
-    #lb_gr=lb_gr/2
     wyn <- array(0, dim=c(lb_gr,12))
     
-    #przeliczenie uk?adu wsp ze wzg na srodek grupy dla wszystkich grup 
+    
+    #Calculate the coefficient system with regard to the group center for all groups
     g=1
     dl_gr <- rep(0, times=lb_gr)
-    #cwiartki <- c("Q","Q","Q","Q","Q","Q","Q","Q","Q","Q","Q","Q")
+    
     
     for (j in 1:lb_gr){
       w_min<-as.data.frame(array(0,dim=c(12*lb_gr,7)))
       w_min2<-as.data.frame(array(0,dim=c(12*lb_gr,7)))
       w_min3<-as.data.frame(array(0,dim=c(12*lb_gr,16)))
       
-      colnames(w_min2)<-c('min', 'max', 'id_stozka', 'gr', 'n_stozka','procent zaj','kolor')
-      colnames(w_min3)<-c('min', 'max', 'id_stozka', 'gr', 'n_stozka','procent zaj','k_10', 'k_20','k_30','k_40', 'k_50', 'k_60','k_70','k_80','k_90','k_100')
+      colnames(w_min2)<-c('min', 'max', 'id_Con', 'group', 'No_Con','% of occupancy','color')
+      colnames(w_min3)<-c('min', 'max', 'id_Con', 'group', 'No_Con','% of occuapncy','k_10', 'k_20','k_30','k_40', 'k_50', 'k_60','k_70','k_80','k_90','k_100')
       
       
       start.time <- Sys.time()
@@ -80,11 +82,7 @@ for (iter in 1:1){
       max_y <- max(zb_2[,2])
       max_z <- max(zb_2[,3])
       
-      #for (t in 1:dl_zb){
-      #  zb_2[t,1] <- (sqrt(3)-(-sqrt(3)))*((zb_2[t,1]-min_x)/(max_x-min_x))+(-sqrt(3))
-      # zb_2[t,2] <- (sqrt(3)-(-sqrt(3)))*((zb_2[t,2]-min_y)/(max_y-min_y))+(-sqrt(3))
-      #  zb_2[t,3] <- (sqrt(3)-(-sqrt(3)))*((zb_2[t,3]-min_z)/(max_z-min_z))+(-sqrt(3))
-      #}
+  
       
       
       
@@ -98,11 +96,9 @@ for (iter in 1:1){
       b_sph <- c(-0.58, 1.16, -0.58, -1.73, 0, 1.73, -1.73, 0, 1.73, 0.58, -1.16, 0.58)
       c_sph <- c(1.63, 1.63, 1.63, 0, 0, 0, 0, 0, 0, -1.63, -1.63, -1.63)
       tu_1 <-0
+     
       
-      #  S_A
-      #a_sph <- 1.15
-      #b_sph <- 0
-      #c_sph <- -1.63
+      
       for (fg in 1:12){
         for (z in 1:(dl_zb)){
           b_delta <- (-2*a_sph[fg]*zb_2[z,1]-2*b_sph[fg]*zb_2[z,2]-2*c_sph[fg]*zb_2[z,3]) #(x+a_sph)^2+(y+b_sph)^2+(z+c_sph)=1
@@ -119,12 +115,10 @@ for (iter in 1:1){
             
             
             zb_2[z,6] = fg
-            #if (zbior[z,4]<10){
+            
+           
             kol_n[fg,(zbior[z,4])]=kol_n[fg,(zbior[z,4])]+1
-            #} else {
-            # kol_n[fg,(zbior[z,4]-9)]=kol_n[fg,(zbior[z,4]-9)]+1
-            #}
-            #cwiartki[1]="S_A"
+            
             
             
           }
@@ -163,8 +157,8 @@ for (iter in 1:1){
         zb_16<-subset(zb_15, (zb_15[,4]==4 | zb_15[,4]==14 ) )
       }
       zb_22<-zb_2
-      #przypisanie bia?ych do kt?regos ze sto?k?w
-      kol=c("yellow", "blue", "cyan", "green", "red", "brown", "chartreuse", "darkslategrey", "bisque3", "darkviolet", "coral4", "deepskyblue")
+      #assign whites to one of the slopes
+      kol=c("yellow", "blue", "cyan", "green", "red", "brown", "chartreuse", "darkslategrey", "bisque3", "darkviolet", "coral4", "deepskyblue") #Color of Con
       
       licz_white=0
       for (o in 1:dl_zb){
@@ -194,9 +188,7 @@ for (iter in 1:1){
             }
             
           }
-          #if (zb_2[o,5]=="white"){
-          #  print(dyst)
-          #}
+        
         }
         
       }
@@ -246,121 +238,20 @@ for (iter in 1:1){
         }
       }
       
-      nazwa<-paste("E:/stozki/artykuł_zb/mysz_wynik_12/wystapienia ",i," ",j,".pdf",sep="")
+      nazwa<-paste(results,i," ",j,".pdf",sep="")
       pdf(nazwa,width=15,height=40)
       barplot(wyn, beside=TRUE, col=rainbow(lb_gr), names.arg=c("T1","T2","T3","ML1","ML2","ML3","MR1", "MR2", "MR3","B1", "B2", "B3"), ylim=c(0,max(wyn)+10))
       #legend("topright", legend=c("1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"), fill = rainbow(lb_gr), ncol = 5, cex = 0.35)
       dev.off()
-      #labs <- c("1","2","3","4","5","6","7","8","9","10","11","12","13","14")
-      #text(cex=1, x=x-.25, y=-1.25, labs, xpd=TRUE, srt=45, pos=2)
       
       
       
       
-      # #przydzielenie bia?ych do kt?rego? z kolorowych
-      # for (i in 1:h){
-      #   if (k[i]=='white'){
-      #     for (u in 1:h){
-      #       for (o in 1:3){
-      #         z <- dane[ which(=="green"), ]
-      #         z <- z[,1:lb_kol]
-      #         z <- data.matrix(z, rownames.force = NA)
-      #         k <- data.matrix(dane[u,1:lb_kol])
-      #         dyst[o] <- hausdorff_dist(as.numeric(z), as.numeric(k) )
-      #       }
-      #       tym[u]<-which.min(dyst)
-      # 
-      #     }
-      #     return(tym)
-      #   }
-      #   }
-      # }
-      
-      # nazwa=paste("E:/stozki/gif12/wykres_",gif_1,"_", j, sep="")
-      # #pdf(nazwa,width=7,height=5)
-      # open3d()
-      # plot3d(zb_2[,1],zb_2[,2],zb_2[,3], col=zb_2[,5], pch=zb_2[,4])
-      # M <- par3d("userMatrix")
-      # if (!rgl.useNULL())
-      #   play3d( par3dinterp(time = (0:2)*0.75, userMatrix = list(M,
-      #                                                           rotate3d(M, pi/2, 1, 0, 0),
-      #                                                          rotate3d(M, pi/2, 0, 1, 0) ) ),
-      #        duration = 3 )
-      # 
-      # 
-      # ## Not run:
-      # movie3d( spin3d(),movie = nazwa, duration = 4 )
-      
-      
-      
-      
-      #dev.off()
-      #rgl.postscript(nazwa,"pdf")
-      
-      
-      # #miara hausdorfa i g?sto??
-      # kol=c("yellow", "blue", "cyan", "green", "red", "brown", "chartreuse", "darkslategrey", "bisque3", "darkviolet", "coral4", "deepskyblue")
-      # #haus <- 123
-      # h_dyst <- array(0, dim=c(lb_gr,12))
-      # zb_7 <- subset(zb_2, (zb_2[,4]==j )) #od ca?ego zbioru odleglosc czy od srodka ????
-      # zb_7 <- zb_7[,1:3]
-      # t_7 <- data.matrix(zb_7, rownames.force = NA)
-      # 
-      # for (o in 1:lb_gr){
-      #   for (t in 1:12){
-      #     zb_6 <- subset(zb_2, ((zb_2[,4]==o ) & zb_2[,6]==t) )
-      #     zb_6 <- zb_6[,1:3]
-      #     t_6 <- data.matrix(zb_6, rownames.force = NA)
-      #     if (nrow(t_6)==0){
-      #       h_dyst[o,t] <- 0
-      #     } else {
-      #       dyst <- hausdorff_dist(as.numeric(t_6), as.numeric(t_7) )
-      #       h_dyst[o,t] <- dyst  
-      #     }
-      #     
-      #   }
-      #   
-      #   
-      # }
-      # 
-      # #miara hausdorfa i g?sto??
-      # kol=c("yellow", "blue", "cyan", "green", "red", "brown", "chartreuse", "darkslategrey", "bisque3", "darkviolet", "coral4", "deepskyblue")
-      # #haus <- 123
-      # h_dyst_2 <- array(0, dim=c(lb_gr))
-      # zb_10 <- subset(zb_2, (zb_2[,4]==j )) #od ca?ego zbioru odleglosc czy od srodka ????
-      # zb_10 <- zb_10[,1:3]
-      # t_10 <- data.matrix(zb_10, rownames.force = NA)
-      # 
-      # for (o in 1:lb_gr){
-      #   for (t in 1:12){
-      #     zb_11 <- subset(zb_2, ((zb_2[,4]==o )) )
-      #     zb_11 <- zb_11[,1:3]
-      #     t_11 <- data.matrix(zb_11, rownames.force = NA)
-      #     if (nrow(t_11)==0){
-      #       h_dyst_2[o] <- 0
-      #     } else {
-      #       dyst <- hausdorff_dist(as.numeric(t_11), as.numeric(t_10) )
-      #       h_dyst_2[o] <- dyst  
-      #     }
-      #     
-      #   }
-      #   
-      #   
-      # }
-      # 
-      
-      
-      
-      
-      #nazwa=paste("E:/stozki/artykuł_zb/mysz_wynik/haus_dys_",i,"_",j , ".csv", sep="")
-      #write.csv(h_dyst,file=nazwa)
+     
       
       #odleglosc min max w stozku dla grupy
       dyst_2 <- array(0, dim=c(lb_gr,24))
-      #zb_7 <- subset(zb_2, zb_2[,4]==j ) #od ca?ego zbioru odleglosc czy od srodka ????
-      #zb_7 <- c(0,0,0)
-      #zb_7 <- zb_7[,1:3]
-      #t_7 <- data.matrix(zb_7, rownames.force = NA)
+      
       r=1
       f=1
       bh=1
@@ -418,29 +309,26 @@ for (iter in 1:1){
         
       }
       
-      naz <- paste("E:/stozki/artykuł_zb/mysz_wynik_12/",i,"-kompl_min_max",j,".txt", sep="")
+      naz <- paste(results,i,"\-kompl_min_max",j,".txt", sep="")
       write.csv(w_min2, file=naz, row.names=FALSE)
       
       for (b in 1:(lb_gr*12)){
         w_min3[b,1:6]<-w_min2[b,1:6]
         w_min3[b,w_min2[b,7]+6]<-w_min2[b,2]
       }
-      naz <- paste("E:/stozki/artykuł_zb/do_wykresu/",i,"_",j,".txt", sep="")
+      naz <- paste(results,i,"_",j,".txt", sep="")
       write.csv(w_min3, file=naz, row.names=FALSE)
       
       
       
       #Zapid wyników stozkowania do pliku
       
-      naz <- paste("E:/stozki/artykuł_zb/mysz_wynik_12/",i,"-poszatkowana stożki",j,".txt", sep="")
+      naz <- paste(results,i,"-Cone",j,".txt", sep="")
       write.csv(zb_2, file=naz)
       
       #odleglosc min max calego chromosomu od centromeru
       dyst_4 <- array(0, dim=c(lb_gr,2))
-      #zb_7 <- subset(zb_2, zb_2[,4]==j ) #od ca?ego zbioru odleglosc czy od srodka ????
-      #zb_7 <- c(0,0,0)
-      #zb_7 <- zb_7[,1:3]
-      #t_7 <- data.matrix(zb_7, rownames.force = NA)
+      
       r=1
       f=1
       for (o in 1:lb_gr){
@@ -468,7 +356,7 @@ for (iter in 1:1){
       
       
       palette( rev(rich.colors(10)) )
-      nazwa<-paste("E:/stozki/artykuł_zb/mysz_wynik_12/wykres min max calosc ",i," ",j,".pdf",sep="")
+      nazwa<-paste(reults, "graph min max ",i," ",j,".pdf",sep="")
       pdf(nazwa,width=15,height=40)
       #par(mfrow=c(5,2)) # all plots on one page 
       #x_y<-1:10
@@ -498,7 +386,7 @@ for (iter in 1:1){
       
       #palette( rev(heat.colors(10)) )
       palette(c("#FFFFE5", "#FFF7BC", "#FEE391", "#FEC44F", "#FE9929", "#EC7014", "#CC4C02", "#993404", "#662506", "#321000"))
-      nazwa<-paste("E:/stozki/artykuł_zb/mysz_wynik_12/wykres ",i," ",j,".pdf",sep="")
+      nazwa<-paste(results, "/DPC ",i," ",j,".pdf",sep="")
       pdf(nazwa,width=15,height=40)
       par(mfrow=c(4,3)) # all plots on one page 
       x_y<-1:10
@@ -522,25 +410,23 @@ for (iter in 1:1){
       tytul_wykresu = paste("DPC12 for mouse data set", ramiona_wykres[j], "\n (", "file_path_sans_ext(i)",")", sep="" ) #po wypuszczeniu wykresu w pliku nie by?o wida? co si? dzieje, wzgl?dem jakiego chromosomu s? wykresy
       mtext(tytul_wykresu, outer = T, cex=1.5)
       dev.off()
-      nazwa=paste("E:/stozki/artykuł_zb/mysz_wynik_12/min_max_",i,"_",j , ".csv", sep="")
+      nazwa=paste(results, "/min_max_",i,"_",j , ".csv", sep="")
       write.csv(dyst_2,file=nazwa)
       
       
       
     }
-    #end.time <- Sys.time()
-    #time.taken <- end.time - start.time
-    #czas[iter,czas_1]<-time.taken
+   
     
   }
-  #write.csv(wyniki,file="wyniki.cvs")
+
   
   
 }
-write.csv(czas,file="E:/stozki/artykuł_zb/mysz_wynik_12/czas_chrom.txt")
+write.csv(czas,file=paste(results, "/czas_chrom.txt", sep = ""))
 
-nazwa=paste("E:/stozki/artykuł_zb/mysz_wynik_12/niezaklasyfikowane_.txt", sep="")
+nazwa=paste(results, "/unclassified_.txt", sep="")
 write.csv(pozostale,nazwa)
 
-nazwa=paste("E:/stozki/artykuł_zb/mysz_wynik_12/podwojnie_klasyfikowane.txt", sep="")
+nazwa=paste(results, "/double_classified.txt", sep="")
 write.csv(podwojne,nazwa)
