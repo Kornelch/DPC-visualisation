@@ -174,8 +174,8 @@ for (iter in 1:1){
             zb_6 <- zb_6[,1:3]
             t_6 <- data.matrix(zb_6, rownames.force = NA)
             t_7 <- data.matrix(zb_2[o,1:3], rownames.force = NA)
-            #dyst <- hausdorff_dist(as.numeric(t_6), as.numeric(t_7) )
-            dyst <- min(sqrt((zb_2[o,1]-zb_6[,1])^2+(zb_2[o,2]-zb_6[,2])^2+(zb_2[o,3]-zb_6[,3])^2 ))
+            dyst <- hausdorff_dist(as.numeric(t_6), as.numeric(t_7) )
+            #dyst <- min(sqrt((zb_2[o,1]-zb_6[,1])^2+(zb_2[o,2]-zb_6[,2])^2+(zb_2[o,3]-zb_6[,3])^2 ))
             if (haus>dyst & dyst!=0 & dyst!=Inf){
               haus=dyst
               zb_2[o,5] <- kol[t]
